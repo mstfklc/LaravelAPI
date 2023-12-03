@@ -15,7 +15,6 @@ class OrderHistory extends Model
         'device_id',
         'product_id',
         'receipt_token',
-        'price',
     ];
 
     public function device()
