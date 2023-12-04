@@ -2,60 +2,89 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Device;
 use App\Models\OrderHistory;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Laravel\Sanctum\Sanctum;
+use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 
 class SubscriptionController extends Controller
 {
-    public function purchase(Request $request)
+    /**
+     * @OA\Post(
+     *     path="/api/purchase/product",
+     *     operationId="purchaseProduct",
+     *     tags={"Subsciption"},
+     *     summary="Purchase a product",
+     *     description="Process a product purchase for authenticated users",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="productId", type="string", example="123456"),
+     *             @OA\Property(property="receiptToken", type="string", example="example_receipt_token"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Product purchased successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *         ),
+     *     ),
+     * )
+     */
+    public function purchaseProduct(Request $request): JsonResponse
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'productId' => 'required|string',
             'receiptToken' => 'required|string',
         ]);
 
-        $accessToken = $request->header('Authorization');
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'error' => 'Invalid request',
+            ]);
+        }
+
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'error' => 'User not authenticated',
+            ]);
+        }
+
+        $accessToken = $user->currentAccessToken();
+
         if (!$accessToken) {
             return response()->json([
                 'status' => false,
-                'error' => 'Unauthorized',
+                'error' => 'Access token not found',
             ]);
         }
-        $accessToken = str_replace('Bearer ', '', $accessToken);
-        $deviceAuth = Sanctum::personalAccessTokenModel()->where('token', hash('sha256', $accessToken))->first();
 
-        return DB::transaction(function () use ($deviceAuth, $request) {
-            $device = $deviceAuth->uuid;
-            $product = Product::where('id', $request->input('productId'))->first();
+        return DB::transaction(function () use ($user, $request) {
+            $uuid = $user->uuid;
+            $product = Product::find($request->input('productId'));
 
-            if (!$device || !$product) {
+            if (!$uuid||!$product) {
                 return response()->json([
                     'status' => false,
                     'error' => 'Device or product not found',
                 ]);
             }
-
-            $order = OrderHistory::create([
-                'device_id' => $device,
+            OrderHistory::create([
+                'devices_uuid' => $uuid,
                 'product_id' => $product->id,
-                'price' => $product->price,
                 'receipt_token' => $request->input('receiptToken'),
-                'purchase_time' => now(),
-            ]);
-            $deviceUpdate = Device::where('uuid', $device)->update([
-                'premium_status' => true,
             ]);
 
-            if (!$order || !$deviceUpdate) {
-                return response()->json([
-                    'status' => false,
-                    'error' => 'Order creation or device update failed',
-                ]);
-            }
             return response()->json([
                 'status' => true,
             ]);
