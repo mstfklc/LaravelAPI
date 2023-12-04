@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\OrderHistory;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -76,6 +77,9 @@ class SubscriptionController extends Controller
                 'devices_uuid' => $uuid,
                 'product_id' => $product->id,
                 'receipt_token' => $request->input('receiptToken'),
+            ]);
+            $user->update([
+                'premium_status' => true,
             ]);
 
             return response()->json([
