@@ -105,7 +105,7 @@ class AdminTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => 'Bearer ' . $user['token'],
         ])->get('/api/admin/list-order');
-        $response->assertStatus(500);
+        $response->assertStatus(401);
     }
 
     /** @test */
