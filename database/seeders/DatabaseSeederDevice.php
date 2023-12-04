@@ -13,7 +13,7 @@ class DatabaseSeederDevice extends Seeder
     public function run(): void
     {
         $faker = Faker::create();
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             \App\Models\Device::create([
                 'uuid' => $faker->uuid,
                 'config_info' => $faker->word,
