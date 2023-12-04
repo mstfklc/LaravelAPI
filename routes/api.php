@@ -1,19 +1,25 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\AdminController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => ['guest']], function () {
+    Route::post('device/login', [DeviceController::class, 'deviceLogin']);
 });
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('purchase/product', [SubscriptionController::class, 'purchaseProduct']);
+});
+
+Route::group(['Admin' => 'api','prefix'=>'admin'], function () {
+    Route::post('register', [AdminController::class, 'adminRegister']);
+    Route::post('login', [AdminController::class, 'adminLogin']);
+});
+
+Route::group(['middleware' => ['auth:sanctum'],'prefix'=>'admin'], function () {
+    Route::get('list-order', [AdminController::class, 'listOrderHistory']);
+});
+
