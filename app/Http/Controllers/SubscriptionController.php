@@ -43,14 +43,9 @@ class SubscriptionController extends Controller
             'productId' => 'required|string',
             'receiptToken' => 'required|string',
         ]);
-
         if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'error' => 'Invalid request',
-            ]);
+            return response()->json(['errors' => $validator->errors()->all()], 400);
         }
-
         $user = Auth::user();
 
         if (!$user) {
@@ -73,11 +68,9 @@ class SubscriptionController extends Controller
             $uuid = $user->uuid;
             $product = Product::find($request->input('productId'));
 
-            if (!$uuid||!$product) {
-                return response()->json([
-                    'status' => false,
-                    'error' => 'Device or product not found',
-                ]);
+            if (!$product) {
+                return response()->json(['errors' => 'Product not found'], 400);
+
             }
             OrderHistory::create([
                 'devices_uuid' => $uuid,

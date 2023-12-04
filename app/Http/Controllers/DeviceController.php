@@ -36,7 +36,7 @@ class DeviceController extends Controller
 
     public function deviceLogin(Request $request): JsonResponse
     {
-        $deviceUuid = $request->input('deviceUuid');
+        $deviceUuid = $request->input('uuid');
 
         if (!$deviceUuid) {
             $device = Device::create([

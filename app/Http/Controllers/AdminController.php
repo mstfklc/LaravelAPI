@@ -49,7 +49,6 @@ class AdminController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
         $user = User::create($input);
@@ -58,7 +57,7 @@ class AdminController extends Controller
             $token = $user->createToken('adminToken')->plainTextToken;
             return response()->json(['token' => $token], 200);
         } else {
-            return response()->json(['error' => 'User registration failed'], 500);
+            return response()->json(['error' => 'User registration failed'], 400);
         }
     }
     /**
@@ -140,8 +139,6 @@ class AdminController extends Controller
         }
         $user = Auth::user();
         $isAdmin = $user->is_admin;
-
-
         if (!$isAdmin) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
