@@ -18,7 +18,7 @@ class DeviceController extends Controller
      *     @OA\RequestBody(
      *         required=false,
      *         @OA\JsonContent(
-     *             @OA\Property(property="deviceUuid", type="string", example="123e4567-e89b-12d3-a456-426614174001"),
+     *             @OA\Property(property="uuid", type="string", example="123e4567-e89b-12d3-a456-426614174001"),
      *         ),
      *     ),
      *     @OA\Response(
