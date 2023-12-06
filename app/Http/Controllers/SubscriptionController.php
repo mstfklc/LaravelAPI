@@ -48,29 +48,12 @@ class SubscriptionController extends Controller
         }
         $user = Auth::user();
 
-        if (!$user) {
-            return response()->json([
-                'status' => false,
-                'error' => 'User not authenticated',
-            ]);
-        }
-
-        $accessToken = $user->currentAccessToken();
-
-        if (!$accessToken) {
-            return response()->json([
-                'status' => false,
-                'error' => 'Access token not found',
-            ]);
-        }
-
         return DB::transaction(function () use ($user, $request) {
             $uuid = $user->uuid;
             $product = Product::find($request->input('productId'));
 
             if (!$product) {
                 return response()->json(['errors' => 'Product not found'], 400);
-
             }
             OrderHistory::create([
                 'devices_uuid' => $uuid,
