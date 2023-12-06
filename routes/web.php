@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\DeviceController;
+use App\Http\Controllers\OrderHistoryController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/admin-login', [AdminController::class, 'showAdminLoginForm'])->name('adminLoginPage');
+Route::post('/admin-login', [AdminController::class, 'adminLogin'])->name('adminLogin');
+
+Route::group(['middleware' => ['auth:web']], function () {
+    Route::get('/list-order-history', [OrderHistoryController::class, 'listOrderHistory'])->name('listOrderHistory');
 });
+
