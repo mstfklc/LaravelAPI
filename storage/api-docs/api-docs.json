@@ -66,107 +66,6 @@
                 }
             }
         },
-        "/api/admin/login": {
-            "post": {
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Admin login",
-                "description": "Login for admin users",
-                "operationId": "adminLogin",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "example": "test@test.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "example": "123456"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Admin logged in successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "token": {
-                                            "type": "string",
-                                            "example": "generated_token_here"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/admin/list-order": {
-            "get": {
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "List order history",
-                "description": "Retrieve a paginated list of order history for admin users",
-                "operationId": "listOrderHistory",
-                "responses": {
-                    "200": {
-                        "description": "List of order history",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "id": {
-                                            "type": "integer",
-                                            "example": 1
-                                        },
-                                        "devices_uuid": {
-                                            "type": "string",
-                                            "example": "f55f7549-d185-433c-9a53-ffeb9ebc6c61"
-                                        },
-                                        "product_id": {
-                                            "type": "integer",
-                                            "example": 6
-                                        },
-                                        "receipt_token": {
-                                            "type": "string",
-                                            "example": "etsssstst"
-                                        },
-                                        "created_at": {
-                                            "type": "string",
-                                            "example": "2023-12-04T04:16:38.000000Z"
-                                        },
-                                        "updated_at": {
-                                            "type": "string",
-                                            "example": "2023-12-04T04:16:38.000000Z"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
         "/api/device/login": {
             "post": {
                 "tags": [
@@ -183,7 +82,7 @@
                                 "properties": {
                                     "uuid": {
                                         "type": "string",
-                                        "example": "123e4567-e89b-12d3-a456-426614174001"
+                                        "example": "d1816de2-bf16-4e4b-b1d0-3638e344b0e2"
                                     }
                                 },
                                 "type": "object"

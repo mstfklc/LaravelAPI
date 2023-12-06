@@ -57,35 +57,27 @@ class AdminController extends Controller
         $token = $user->createToken('adminToken')->plainTextToken;
         return response()->json(['token' => $token], 200);
     }
-    public function adminLogin(Request $request): RedirectResponse
+    public function adminLogin(Request $request): \Illuminate\Http\JsonResponse|RedirectResponse
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'email' => 'required|email',
-                'password' => 'required',
-            ]);
-            if ($validator->fails()) {
-                throw new ValidationException($validator);
-            }
-
-            $user = User::where('email', $request->email)->where('is_admin', true)->first();
-
-            if ($user && Hash::check($request->password, $user->password)) {
-                $token = $user->createToken('authToken', ['is_admin' => $user->is_admin])->plainTextToken;
-
-                Auth::login($user);
-                Auth::guard('web')->logoutOtherDevices($request->password);
-                return redirect()->route('listOrderHistory')->withCookie(cookie('authToken', $token));
-            }
-
-            throw new ValidationException(
-                Validator::make([], []),
-                response()->json(['message' => 'Invalid credentials'], 422)
-            );
-
-        } catch (ValidationException $e) {
-            return $e->getResponse();
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()->first()], 422);
         }
+        $user = User::where('email', $request->email)->where('is_admin', true)->first();
+
+        if ($user && Hash::check($request->password, $user->password)) {
+            $token = $user->createToken('authToken', ['is_admin' => $user->is_admin])->plainTextToken;
+
+            Auth::login($user);
+            Auth::guard('web')->logoutOtherDevices($request->password);
+
+            return redirect()->route('listOrderHistory')->withCookie(cookie('authToken', $token));
+        }
+        return response()->json(['message' => 'Invalid credentials'], 422);
+
     }    public function showAdminLoginForm()
     {
         return view('adminLogin');
